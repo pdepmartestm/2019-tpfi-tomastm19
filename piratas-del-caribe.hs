@@ -1,10 +1,15 @@
 import Text.Show.Functions
 main = print 0
 
-data Pirata = Pirata{
+data Pirata = Pirata {
     nombre :: String,
     botin :: Botin,
     saqueos :: [Saqueo]
+} deriving (Show)
+
+data Barco = Barco {
+    tripulacion :: [Pirata],
+    saqueo :: Saqueo
 } deriving (Show)
 
 type Botin = [Tesoro]
@@ -28,6 +33,20 @@ anneBonny = Pirata {
     botin = [("Doblones",100), ("Frasco de Arena", 1)],
     saqueos = [saquearTesoroEspecifico "oro"]
 }
+
+perlaNegra = Barco {
+    tripulacion = [jackSparrow, anneBonny],
+    saqueo = 
+}
+
+holandesErrante = Barco {
+    tripulacion = [davidJones]
+    saqueo = 
+}
+
+
+-- *** Tesoros piratas *** 
+
 
 cantTesoros :: Pirata -> Int
 cantTesoros = (length.botin)
@@ -65,6 +84,10 @@ removerTesoro pirata nombre = pirata {botin = filter (tesoroNoEsNombre nombre) (
 tesoroNoEsNombre :: String -> Tesoro -> Bool
 tesoroNoEsNombre nombre1 (nombre2, _) = nombre2 /= nombre1
 
+
+-- *** Temporada de saqueos ***
+
+
 saquearTesoroValioso :: Saqueo
 saquearTesoroValioso = not.tesoroNoValioso
 
@@ -80,3 +103,19 @@ saquear pirata tesoro | any (cumpleCondicion tesoro) (saqueos pirata) = agregarT
 
 cumpleCondicion :: Tesoro -> Saqueo -> Bool
 cumpleCondicion tesoro saqueo = saqueo tesoro
+
+
+-- *** Navegando los siete mares ***  
+
+
+agregarTripulante :: Barco -> Pirata -> Barco
+agregarTripulante barco pirata = barco{tripulacion = tripulacion barco ++ [pirata]}
+
+removerTripulante :: Barco -> Pirata -> Barco
+removerTripulante barco pirata = barco{tripulacion = filter (tripulanteNoEsPirata pirata) (barco tripulacion)}
+
+anclarEnIsla :: Barco -> Isla -> Barco
+anclarEnIsla barco isla = isla barco
+
+atacarCiudad :: Barco -> Ciudad -> Barco
+atacarCiudad barco ciudad = ciudad barco
