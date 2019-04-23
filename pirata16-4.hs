@@ -1,11 +1,13 @@
+import Text.Show.Functions
+
 data Pirata = Pirata{
     nombre::String,
     botin::Botin
-}
+} deriving (Show)
 
 type Botin = [Tesoro]
 type Tesoro = (String, Int)
-type Saqueo = 
+--type Saqueo = 
 
 jackSparrow = Pirata {
     nombre = "Jack Sparrow",
@@ -58,4 +60,4 @@ removerTesoro pirata nombre = pirata {botin = filter (tesoroNoEsNombre nombre) (
 tesoroNoEsNombre :: String -> Tesoro -> Bool
 tesoroNoEsNombre nombre (x,y) = x /= nombre
 
-saquear :: Pirata -> Saqueo -> Tesoro -> Pirata
+--saquear :: Pirata -> Saqueo -> Tesoro -> Pirata
