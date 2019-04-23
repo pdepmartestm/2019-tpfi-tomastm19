@@ -34,13 +34,16 @@ esAfortunado :: Pirata -> Bool
 esAfortunado = ((>10000).sum.(map (valorTesoro)).botin)
 
 valorTesoro :: Tesoro -> Int
-valorTesoro (x,y) = y 
+valorTesoro (_, valor) = valor
 
---tienenMismoTesoroConDistintoValor :: Pirata -> Pirata -> Bool
---tienenMismoTesoroConDistintoValor unPirata otroPirata = find (mismoTesoro botin unPirata) botin otroPirata
+tienenMismoTesoroConDistintoValor :: Pirata -> Pirata -> Bool
+tienenMismoTesoroConDistintoValor unPirata otroPirata = any (tieneTesoroConDistintoValor (botin otroPirata)) (botin unPirata)
 
---mismoTesoro :: Botin -> Botin -> Bool
---mismoTesoro unBotin otroBotin =
+tieneTesoroConDistintoValor :: Botin -> Tesoro -> Bool
+tieneTesoroConDistintoValor unBotin tesoro = any (mismoTesoroDistintoValor tesoro) unBotin 
+
+mismoTesoroDistintoValor :: Tesoro -> Tesoro -> Bool
+mismoTesoroDistintoValor (nombre1, valor1) (nombre2, valor2) = nombre1 == nombre2 &&  valor1 /=valor2
 
 tesoroMasValioso :: Pirata -> Int
 tesoroMasValioso = (maximum.(map (valorTesoro)).botin)
@@ -52,12 +55,12 @@ perderTesorosValiosos :: Pirata -> Pirata
 perderTesorosValiosos pirata = pirata {botin = ((filter tesoroNoValioso).botin) pirata} 
 
 tesoroNoValioso :: Tesoro -> Bool
-tesoroNoValioso (x,y) = y < 100
+tesoroNoValioso (_, valor) = valor < 100
 
 removerTesoro :: Pirata -> String -> Pirata
 removerTesoro pirata nombre = pirata {botin = filter (tesoroNoEsNombre nombre) (botin pirata)}
 
 tesoroNoEsNombre :: String -> Tesoro -> Bool
-tesoroNoEsNombre nombre (x,y) = x /= nombre
+tesoroNoEsNombre nombre1 (nombre2, _) = nombre2 /= nombre1
 
 --saquear :: Pirata -> Saqueo -> Tesoro -> Pirata
