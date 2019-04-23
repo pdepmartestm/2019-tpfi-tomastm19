@@ -1,31 +1,33 @@
 import Text.Show.Functions
+main = print 0
 
 data Pirata = Pirata{
-    nombre::String,
-    botin::Botin
+    nombre :: String,
+    botin :: Botin,
+    saqueos :: [Saqueo]
 } deriving (Show)
 
 type Botin = [Tesoro]
 type Tesoro = (String, Int)
---type Saqueo = 
+type Saqueo = Tesoro -> Bool
 
 jackSparrow = Pirata {
     nombre = "Jack Sparrow",
-    botin = [("Brujula", 10000), ("Frasco de Arena", 0)]
+    botin = [("Brujula", 10000), ("Frasco de Arena", 0)],
+    saqueos = [saquearTesoroValioso, (saquearTesoroEspecifico "sombrero")]
 }
 
 davidJones = Pirata {
     nombre = "David Jones",
-    botin = [("Caja musical",1)]
+    botin = [("Caja musical",1)],
+    saqueos = [noSaquear]
 }
 
 anneBonny = Pirata {
     nombre = "Anne Bonny",
-    botin = [("Doblones",100), ("Frasco de Arena", 1)]
+    botin = [("Doblones",100), ("Frasco de Arena", 1)],
+    saqueos = [saquearTesoroEspecifico "oro"]
 }
-
-unPirata :: Pirata
-unPirata =  Pirata "pirata" [("dsada",2), ("dsdas",1500), ("dadsaf",50000)]
 
 cantTesoros :: Pirata -> Int
 cantTesoros = (length.botin)
@@ -63,4 +65,18 @@ removerTesoro pirata nombre = pirata {botin = filter (tesoroNoEsNombre nombre) (
 tesoroNoEsNombre :: String -> Tesoro -> Bool
 tesoroNoEsNombre nombre1 (nombre2, _) = nombre2 /= nombre1
 
---saquear :: Pirata -> Saqueo -> Tesoro -> Pirata
+saquearTesoroValioso :: Saqueo
+saquearTesoroValioso = not.tesoroNoValioso
+
+saquearTesoroEspecifico :: String -> Saqueo
+saquearTesoroEspecifico nombre tesoro = fst tesoro == nombre
+
+noSaquear :: Saqueo
+noSaquear tesoro = False 
+
+saquear :: Pirata -> Tesoro -> Pirata
+saquear pirata tesoro | any (cumpleCondicion tesoro) (saqueos pirata) = agregarTesoro pirata tesoro
+                      | otherwise = pirata
+
+cumpleCondicion :: Tesoro -> Saqueo -> Bool
+cumpleCondicion tesoro saqueo = saqueo tesoro
