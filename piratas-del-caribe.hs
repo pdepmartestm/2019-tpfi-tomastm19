@@ -8,9 +8,20 @@ data Pirata = Pirata {
 } deriving (Show)
 
 data Barco = Barco {
+    nombreBarco :: String,
     tripulacion :: [Pirata],
     saqueo :: Saqueo
 } deriving (Show)
+
+data Isla = Isla {
+    nombreIsla :: String,
+    elementoTipico :: Tesoro
+}
+
+data Ciudad = Ciudad {
+    nombreCiudad :: String,
+    tesoros :: Botin
+}
 
 type Botin = [Tesoro]
 type Tesoro = (String, Int)
@@ -35,13 +46,15 @@ anneBonny = Pirata {
 }
 
 perlaNegra = Barco {
+    nombreBarco = "Perla Negra",
     tripulacion = [jackSparrow, anneBonny],
-    saqueo = 
+    saqueo = saquearTesoroValioso
 }
 
 holandesErrante = Barco {
-    tripulacion = [davidJones]
-    saqueo = 
+    nombreBarco = "Holandes Errante",
+    tripulacion = [davidJones],
+    saqueo = noSaquear
 }
 
 
@@ -112,10 +125,18 @@ agregarTripulante :: Barco -> Pirata -> Barco
 agregarTripulante barco pirata = barco{tripulacion = tripulacion barco ++ [pirata]}
 
 removerTripulante :: Barco -> Pirata -> Barco
-removerTripulante barco pirata = barco{tripulacion = filter (tripulanteNoEsPirata pirata) (barco tripulacion)}
+removerTripulante barco pirata = barco{tripulacion = filter (tripulanteNoEsPirata pirata) (tripulacion barco)}
+
+tripulanteNoEsPirata :: Pirata -> Pirata -> Bool
+tripulanteNoEsPirata pirata1 pirata2 = (nombre pirata1) /= (nombre pirata2)
 
 anclarEnIsla :: Barco -> Isla -> Barco
-anclarEnIsla barco isla = isla barco
+anclarEnIsla barco isla = barco {tripulacion = map ((flip agregarTesoro) (elementoTipico isla)) (tripulacion barco)}
 
 atacarCiudad :: Barco -> Ciudad -> Barco
-atacarCiudad barco ciudad = ciudad barco
+atacarCiudad barco ciudad =  barco {tripulacion = zipWith saquear (tripulacion barco) (tesoros ciudad)}
+
+-- El barco con más tripulantes se lleva a los tripulantes del otro
+abordarBarco :: Barco -> Barco -> Barco
+abordarBarco barco1 barco2 | length (tripulacion barco1) > length (tripulacion barco2) = barco1 {tripulacion = tripulacion barco1 ++ tripulacion barco2}
+                           | otherwise = barco2 {tripulacion = tripulacion barco2 ++ tripulacion barco1}
